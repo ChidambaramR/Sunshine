@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">sunshine</string>
+
+    <string-array name="Countdown">
+        <item>47 days more</item>
+        <item>26 days</item>
+        <item>9 days (approx)</item>
+        <item>130sh days</item>
+    </string-array>
+</resources>
