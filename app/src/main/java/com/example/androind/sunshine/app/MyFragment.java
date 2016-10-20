@@ -1,5 +1,6 @@
 package com.example.androind.sunshine.app;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,6 +23,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -53,6 +61,24 @@ public class MyFragment extends ListFragment implements AdapterView.OnItemClickL
 
     }
 
+    private List<String> sevenDaysFromNow() {
+        Calendar now = Calendar.getInstance();
+
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+
+        List<String> days = new ArrayList<>();
+
+        int delta = -now.get(GregorianCalendar.DAY_OF_WEEK) + 2; //add 2 if your week start on monday
+        now.add(Calendar.DAY_OF_MONTH, delta );
+        for (int i = 0; i < 7; i++)
+        {
+            days.add(i, format.format(now.getTime()));
+
+            now.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        return days;
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -61,7 +87,8 @@ public class MyFragment extends ListFragment implements AdapterView.OnItemClickL
             List<String> weather = new WeatherInfoFetcher().execute("http://api.openweathermap.org/data/2.5/forecast/daily?zip=94041%2Cus&appid=52b03e99eaa81400047e68273f853df2&cnt=7").get();
             //ArrayAdapter adapter = ArrayAdapter.createFromResource(getActivity(), R.array.Countdown, android.R.layout.simple_list_item_1);
             System.out.println(weather);
-            ArrayAdapter<String> ad = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, weather);
+
+            ArrayAdapter<String> ad = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, sevenDaysFromNow());
 
             setListAdapter(ad);
             getListView().setOnItemClickListener(this);
@@ -81,6 +108,10 @@ public class MyFragment extends ListFragment implements AdapterView.OnItemClickL
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Toast.makeText(getActivity(), "Item: " + position, Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(getContext(), DetailedActivity.class);
+        intent.putExtra("com.example.android.sunshine.app.DAY", position);
+        startActivity(intent);
     }
 
 }
